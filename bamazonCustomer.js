@@ -107,10 +107,9 @@ function userPurchase() {
             connection.query(updateQuery, function(err, res) {
               if (err) throw err;
 
-              console.log(
-                "Your product(s) has been placed!!! Your total is $" +
-                  productInventory.price * qty
-              );
+              console.log("Your product(s) has been placed!!!");
+              console.log("Your total is $ " + productInventory.price * qty);
+              console.log("Would you like to purchase another item?");
 
               connection.end();
             });
