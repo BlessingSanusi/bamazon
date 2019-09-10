@@ -138,6 +138,7 @@ function bamazon() {
         inventory();
       } else {
         console.log("Thanks for shopping with us!!!");
+        connection.end();
       }
     });
 }
