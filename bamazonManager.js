@@ -108,15 +108,58 @@ function lowInventory() {
 }
 
 function addInventory() {
-  console.log("Add more products ................ \n");
-
-  inquirer.prompt([
-    {
-      name: "inventory",
-      type: "input",
-      message: "What is the product name?"
+  connection.query("SELECT * FROM Products", function(err, results) {
+    var productsArr = [];
+    for (var i = 0; i < results.length; i++) {
+      productsArr.push(results[i].product_name);
     }
-  ]);
+    console.log("Updating product low inventory...");
+    inquirer
+      .prompt([
+        {
+          name: "inventory",
+          type: "list",
+          message: "What product will you like to add more inventory?"
+        },
+        {
+          name: "quantity",
+          type: "input",
+          message: "How many quantity are you adding?",
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+      ])
+      .then(function(answer) {
+        var currentqty;
+        for (var i = 0; i < results[i]; i++) {
+          if (results[i].product_name === answer.inventory) {
+            currentqty = res[i].stock_quantity;
+          }
+        }
+
+        var query = connection.query(
+          "UPDATE Products SET ? WHERE ?",
+          [
+            { stock_quantity: currentqty + parseInt(answer.quantity) },
+            { product_name: answer.inventory }
+          ],
+          function(err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " products updated!\n");
+          }
+        );
+
+        // logs the actual query being run
+        console.log(query.sql);
+
+        menu();
+      });
+  });
 }
 
 function newInventory() {

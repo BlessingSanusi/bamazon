@@ -97,7 +97,7 @@ function userPurchase() {
         } else {
           var productInventory = res[0];
           if (qty <= productInventory.stock_quantity) {
-            console.log("The product(s) is in stock");
+            console.log("The product is in stock");
 
             var updateQuery =
               "UPDATE products SET stock_quantity = " +
@@ -117,6 +117,7 @@ function userPurchase() {
           } else {
             if (qty > productInventory.stock_quantity) {
               console.log("Insuffiencient quantity!!!");
+              bamazon();
             }
           }
         }
