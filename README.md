@@ -28,4 +28,8 @@
     * This means updating the SQL database to reflect the remaining quantity.
     * Once the update goes through, show the customer the total cost of their purchase.
 
+### Run customer's view
+
+`<node bamazonCustomer.js>`
+
 ![Alt Text]('img/customerView.png')
