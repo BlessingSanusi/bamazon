@@ -2,6 +2,8 @@
 
 ## An Amazon-like storefront CLI App with _Nodejs_ and _MySQL_
 
+## The app will take in orders from customers and deplete stock from the store's inventory. It also tracks product sales across department.
+
 ## Technologies Used
 
     * MySQL
@@ -11,8 +13,6 @@
         * MySQL
         * CLI-Table
         * dotenv
-
-## The app will take in orders from customers and deplete stock from the store's inventory. It also tracks product sales across department.
 
 ## Customer View
 
@@ -32,4 +32,4 @@
 
 `<node bamazonCustomer.js>`
 
-![Alt Text]('img/customerView.png')
+![customer-view screenshot](/img/customerView.png)
