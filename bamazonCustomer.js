@@ -13,9 +13,10 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  // run the start function after the connection is made to prompt the user
-  bamazon();
+  console.log("connected as id " + connection.threadId);
 });
+
+inventory();
 
 function inventory() {
   connection.query("SELECT * FROM Products", function(err, results) {
@@ -82,7 +83,7 @@ function userPurchase() {
     ])
     .then(function(answer) {
       var item = answer.product_item;
-      var qty = answer.product_qty;
+      var qty = parseInt(answer.product_qty);
 
       var productQuery = "SELECT * FROM Products WHERE ? ";
 
@@ -100,7 +101,7 @@ function userPurchase() {
 
             var updateQuery =
               "UPDATE products SET stock_quantity = " +
-              (productInventory.stock_quantity - qty) +
+              (parseInt(productInventory.stock_quantity) - parseInt(qty)) +
               " WHERE item_id = " +
               item;
 
@@ -109,20 +110,33 @@ function userPurchase() {
 
               console.log("Your product(s) has been placed!!!");
               console.log("Your total is $ " + productInventory.price * qty);
-              console.log("Would you like to purchase another item?");
+              bamazon();
 
-              connection.end();
+              //   connection.end();
             });
           } else {
-            console.log("Insufficient quantity!");
+            if (qty > productInventory.stock_quantity) {
+              console.log("Insuffiencient quantity!!!");
+            }
           }
-
-          inventory();
         }
       });
     });
 }
 
 function bamazon() {
-  inventory();
+  inquirer
+    .prompt({
+      type: "list",
+      name: "reBuy",
+      message: "Do you want to make another purchase?",
+      choices: ["Yes", "No"]
+    })
+    .then(function(ans) {
+      if (ans.reBuy === "Yes") {
+        inventory();
+      } else {
+        console.log("Thanks for shopping with us!!!");
+      }
+    });
 }
