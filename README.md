@@ -27,11 +27,11 @@
     * This means updating the SQL database to reflect the remaining quantity.
     * Once the update goes through, show the customer the total cost of their purchase.
 
-![customer-view screenshot](/img/customerView.png)
-
 ### Run customer's view with
 
 `<node bamazonCustomer.js>`
+
+![customer-view screenshot](/img/customerView.png)
 
 ## Manager View
 
