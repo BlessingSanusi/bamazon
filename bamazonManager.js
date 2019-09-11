@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId);
+  console.log("connected as id " + connection.threadId + "\n");
 });
 
 menu();
@@ -28,7 +28,8 @@ function menu() {
         "View Products for Sale",
         "View Low Inventory",
         "Add to Inventory",
-        "Add New Product"
+        "Add New Product",
+        "Exit"
       ]
     })
     .then(function(answer) {
@@ -40,6 +41,8 @@ function menu() {
         addInventory();
       } else if (answer.options === "Add New Product") {
         newInventory();
+      } else if (answer.options === "Exit") {
+        connection.end();
       } else {
         console.log("Choose something!");
       }
@@ -108,51 +111,59 @@ function lowInventory() {
 }
 
 function addInventory() {
-  inquirer
-    .prompt([
-      {
-        name: "inventory",
-        type: "input",
-        message: "What product will you like to add more inventory?"
-      },
-      {
-        name: "quantity",
-        type: "input",
-        message: "How many quantity are you adding?",
-        validate: function(value) {
-          if (isNaN(value) === false) {
-            return true;
-          } else {
-            return false;
+  connection.query("SELECT * FROM Products", function(err, res) {
+    if (err) {
+      console.log(err);
+    }
+    var productArr = [];
+    for (var i = 0; i < res.length; i++) {
+      productArr.push(res[i].product_name);
+    }
+
+    inquirer
+      .prompt([
+        {
+          name: "inventory",
+          type: "list",
+          choices: productArr,
+          message: "Choose an item you want to add more inventory to?"
+        },
+        {
+          name: "quantity",
+          type: "input",
+          message: "How many quantity are you adding?",
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            } else {
+              return false;
+            }
           }
         }
-      }
-    ])
-    .then(function(answer) {
-      var currentqty;
-      for (var i = 0; i < results[i]; i++) {
-        if (results[i].product_name === answer.inventory) {
-          currentqty = res[i].stock_quantity;
+      ])
+      .then(function(answer) {
+        var currentqty;
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].product_name === answer.inventory) {
+            currentqty = res[i].stock_quantity;
+          }
         }
-      }
-      console.log("Updating product low inventory...");
-      var query = connection.query(
-        "UPDATE Products SET ? WHERE ?",
-        [
-          { stock_quantity: currentqty + parseInt(answer.quantity) },
-          { product_name: answer.inventory }
-        ],
-        function(err, res) {
-          if (err) throw err;
-          console.log(res.affectedRows + " products updated!\n");
-        }
-      );
-
-      // logs the actual query being run
-      console.log(query.sql);
-
-      menu();
-    });
+        console.log("Updating product low inventory...");
+        var query = connection.query(
+          "UPDATE Products SET ? WHERE ?",
+          [
+            { stock_quantity: currentqty + parseInt(answer.quantity) },
+            { product_name: answer.inventory }
+          ],
+          function(err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " products updated!\n");
+          }
+        );
+        console.log(query.sql);
+        menu();
+      });
+  });
 }
 
 function newInventory() {
